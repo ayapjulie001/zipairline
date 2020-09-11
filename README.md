@@ -13,7 +13,6 @@ Follow instruction as below or use virtual env that is already installed to your
 
 2. once installed, run below commands in CMD
   mkvirtualenv <your choice of virtual env name>
-  
   2.a. to manually activate the virtual env, run below commands in CMD
     workon <your virtual env name created>
 
