@@ -15,14 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework import routers
 
-from core import viewsets as core_viewsets
-
-rest_router = routers.DefaultRouter()
-rest_router.register(r'airplane', core_viewsets.AirplaneViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(rest_router.urls)),
+    path('api/', include('core.urls')),
 ]

@@ -83,31 +83,47 @@ class AirplaneSerializer(serializers.ModelSerializer):
         
         return (math.log(id_num) * 0.08) + (passenger * 0.002)
     
+    """
+    Function: get_max_mins_fly
+    Description: Computes max no of minutes the airplane can fly
+    arguments: custom id of airplane(int), number of passenger(int)
+    return: float 
+    """
+    
+    def get_max_mins_fly(self, capacity: float, consumption: float):
+        
+        return capacity / consumption
+    
     
     ## override to_presentation for additional details required
     def to_representation(self, data):
             
         # Serialize the airplane object
         serialized_data = super(AirplaneSerializer, self).to_representation(data)
-        request_data = self.context['request'].data
         
         # Include your non-model data
         # I hope I understood clearly the passenger side,
         # Initial solution was passenger field will be added in the model,
         # but as I read through instructions mentioned "passenger assumptions"
+        serialized_data["passenger"] = 0
         
-        if isinstance(request_data, list):
-            serialized_data = self.handle_many(request_data, serialized_data)
-        else:
-            serialized_data = self.handle_one(request_data, serialized_data)
+        if "request" in self.context:
+            if self.context['request'].method != 'GET':            
+                request_data = self.context['request'].data
+                if isinstance(request_data, list):
+                    serialized_data = self.handle_many(request_data, serialized_data)
+                else:
+                    serialized_data = self.handle_one(request_data, serialized_data)
+                   
             
         tank_capacity: float = self.get_capacity(serialized_data["id"])
         tank_consumption: float = self.get_consumption(serialized_data["id"], serialized_data["passenger"])
+        max_mins_fly: float = self.get_max_mins_fly(tank_capacity, tank_consumption)
         
         serialized_data["computed_details"] = {
             "tank_capacity" : tank_capacity,            
             "tank_consumption" : tank_consumption,
-            "max_mins_fly" : tank_capacity / tank_consumption,
+            "max_mins_fly" : max_mins_fly,
         }
         
         return serialized_data    
